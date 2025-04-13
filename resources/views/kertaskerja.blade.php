@@ -8,6 +8,7 @@
     <meta name="author" content="" />
     <title>JDIH - Internal Audit KCIC</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google fonts-->
@@ -22,6 +23,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <style>
         /* Navbar putih dengan bayangan */
@@ -367,162 +370,47 @@
                 <h1 class="fw-bolder mt-2">Cari Kertas Kerja, Secepat-cepatnya!</h1>
                 <p>Website yang membantu menyimpan Kertas Kerja kamu!</p>
             </div>
-            <!-- Search Form -->
-            <div class="row justify-content-start mt-0">
-                <div class="col-md-6">
-                </div>
-            </div>
         </div>
     </header>
     <div class="container mt-5 mb-5">
-        <div class="row">
-            <!-- Card 1 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Pengelolaan Pendapatan Farebox dan Non-farebox (Non-Farebox)</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('detailkertaskerja') }}" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
+        <div class="row justify-content-start mt-0">
+            <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+                <a href="#" id="tambahKertasKerja" class="btn border border-dark"
+                    style="color: #1B56FD">Tambah Kertas Kerja</a>
+            </div>
+        </div>
+        <div class="row mt-5">
+            @if ($kertas_kerja->isNotEmpty())
+                @foreach ($kertas_kerja as $item)
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
+                            <div
+                                class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
+                                {{ $item->tahun }}
+                            </div>
+                            <div class="card-body text-center d-flex flex-column">
+                                <h5 class="card-title fw-bold text-dark">Penugasan</h5>
+                                <p class="text-muted small">{{ $item->deskripsi }}</p>
+                                <div class="mt-auto">
+                                    <a href="/detailkertaskerja/{{ $item->id }}"
+                                        class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-search me-2"></i> Lihat Detail
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-    
-            <!-- Card 2 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Pengelolaan Pendapatan Farebox dan Non-farebox (Farebox)</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('detailkertaskerja1') }}" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
-                        </div>
+                @endforeach
+            @else
+                <div class="col-12 text-center">
+                    <div class="alert alert-info" role="alert">
+                        <span class="text-danger">Tidak ada Kertas Kerja yang ditemukan.</span>
                     </div>
                 </div>
-            </div>
-    
-            <!-- Card 3 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Pengadaan Lahan Transit Oriented Development (TOD) di Tegalluar</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('detailkertaskerja2') }}" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Card 4 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Potensi Kecurangan dalam Sistem Refund Tiket Whoosh Berbasis Digital</p>
-                        <div class="mt-auto">
-                            <a href="#" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Card 5 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Implementasi Kebijakan K3 dalam Pembangunan Stasiun</p>
-                        <div class="mt-auto">
-                            <a href="#" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Card 6 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Keamanan Siber pada Sistem Pemesanan Tiket</p>
-                        <div class="mt-auto">
-                            <a href="#" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Card 7 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Manajemen Risiko Operasional Kereta Cepat</p>
-                        <div class="mt-auto">
-                            <a href="#" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Card 8 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 shadow-md border-0 rounded-4 overflow-hidden position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle-x badge bg-dark text-white px-3 py-2 rounded-bottom">
-                        2024
-                    </div>
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark">Penugasan</h5>
-                        <p class="text-muted small">Audit Efisiensi dan Keandalan Sistem Perawatan Kereta Cepat</p>
-                        <div class="mt-auto">
-                            <a href="#" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
+            @endif
         </div>
     </div>
-    
+
 
     <style>
         .card {
@@ -670,6 +558,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('custom/js/kertaskerja.js') }}"></script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @elseif(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @endif
 </body>
 
 </html>

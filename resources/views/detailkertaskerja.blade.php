@@ -8,6 +8,7 @@
     <meta name="author" content="" />
     <title>JDIH - Internal Audit KCIC</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google fonts-->
@@ -22,6 +23,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <style>
         /* Navbar putih dengan bayangan */
@@ -200,6 +204,11 @@
             color: white;
             border-radius: 50%;
         }
+
+        .pdf-popup {
+            max-width: 90%;
+            width: 90%;
+        }
     </style>
 </head>
 
@@ -296,9 +305,7 @@
             <div class="col-12 text-center">
                 <h3 class="my-4 mb-4 mt-5" style="position: relative; display: inline-block;">
                     <span>Daftar</span>
-                    <span class="text-dark">Kertas Kerja Audit Pengelolaan Pendapatan Farebox dan
-                        Non-farebox</span><br>
-                    <span class="text-dark">(Non-Farebox)</span>
+                    <span class="text-dark">{{ $kertas_kerja->deskripsi }}</span>
                     <span class="mt-3"
                         style="position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 50px; height: 4px; background-color: rgb(0, 0, 0);"></span>
                 </h3>
@@ -325,13 +332,23 @@
 
         <!-- Tabel Daftar Kertas Kerja -->
         <!-- Tab Pane: Berdasarkan Huia -->
+        <div class="row mb-4 mt-3">
+            <div class="col-12 d-flex justify-content-start">
+                <a href="#" class="btn border border-dark" data-id="{{ $kertas_kerja->id }}"
+                    id="tambahSubKertasKerja" style="color: #1B56FD">
+                    Tambah Data
+                </a>
+            </div>
+        </div>
+
         <div id="huia" class="tab-content fade" style="display: none;">
             <div class="card mb-5" style="padding: 25px;">
                 <div class="row">
                     <div class="col-12">
                         <!-- Responsive table wrapper -->
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle" style="border-color: black;">
+                            <table id="detailKerja" class="table display table-bordered table-hover align-middle"
+                                style="border-color: black;">
                                 <thead class="table-light" style="border-color: black;">
                                     <tr>
                                         <th style="text-align: center;">No</th>
@@ -342,130 +359,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td style="text-align: center;">1</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Surat Tugas Audit Operasional Departemen Keuangan</td>
-                                        <td>Surat Tugas</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal1">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">2</td>
-                                        <td style="text-align: center;">2023</td>
-                                        <td>Surat Tugas Audit Kepatuhan Proses Pengadaan</td>
-                                        <td>Surat Tugas</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal2">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">3</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Dokumen Evaluasi Pengendalian Internal atas Proses Keuangan</td>
-                                        <td>Pengujian Pengendalian</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal3">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">4</td>
-                                        <td style="text-align: center;">2023</td>
-                                        <td>Analisis Risiko dalam Laporan Keuangan Tahun 2023</td>
-                                        <td>Analisis Risiko</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal4">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">5</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Ringkasan Temuan Audit atas Pengeluaran Operasional</td>
-                                        <td>Temuan Audit</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal5">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">6</td>
-                                        <td style="text-align: center;">2022</td>
-                                        <td>Laporan Pengujian Substantif atas Transaksi Keuangan</td>
-                                        <td>Pengujian Substantif</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal6">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">7</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Surat Pernyataan Manajemen atas Keakuratan Laporan Keuangan</td>
-                                        <td>Surat Pernyataan</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal7">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">8</td>
-                                        <td style="text-align: center;">2023</td>
-                                        <td>Checklist Kepatuhan Proses Bisnis dalam Audit Internal</td>
-                                        <td>Checklist Audit</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal8">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">9</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Konfirmasi Pihak Ketiga atas Saldo Rekening Bank</td>
-                                        <td>Konfirmasi Pihak Ketiga</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal9">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">10</td>
-                                        <td style="text-align: center;">2023</td>
-                                        <td>Rekonsiliasi Piutang dan Hutang dengan Laporan Keuangan</td>
-                                        <td>Rekonsiliasi</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal10">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    @foreach ($sub_kertas_kerja as $item)
+                                        <tr>
+                                            <td style="text-align: center;">{{ $loop->iteration }}</td>
+                                            <td style="text-align: center;">{{ $item->tahun }}</td>
+                                            <td>{{ $item->deskripsi }}</td>
+                                            <td>{{ $item->kategori }}</td>
+                                            <td style="text-align: center;">
+                                                <a href="#" class="btn btn-outline-dark filePdf"
+                                                    data-pdf="{{ asset('storage/' . $item->file_pdf) }}">
+                                                    <i class="fas fa-info"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                             <!-- Pagination -->
-                            <nav aria-label="Page navigation example" class="mt-4">
+                            {{-- <nav aria-label="Page navigation example" class="mt-4">
                                 <ul class="pagination justify-content-end">
                                     <li class="page-item">
                                         <a class="page-link" href="#" aria-label="Previous">
@@ -487,200 +398,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        {{-- Tabel Huib --}}
-        <div id="huib" class="tab-content fade" style="display: none;">
-            <div class="card mb-5" style="padding: 25px;">
-                <div class="row">
-                    <div class="col-12">
-                        <!-- Responsive table wrapper -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle" style="border-color: black;">
-                                <thead class="table-light" style="border-color: black;">
-                                    <tr>
-                                        <th style="text-align: center;">No</th>
-                                        <th style="text-align: center;">Tahun</th>
-                                        <th>Objek Audit</th>
-                                        <th>Uraian</th>
-                                        <th style="text-align: center;">File</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="text-align: center;">1</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Audit Pembebasan Lahan</td>
-                                        <td>Surat Pernyataan Haji Pram</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal1">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">2</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Audit Pengelolaan Dana CSR</td>
-                                        <td>Laporan Penggunaan Dana CSR</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal2">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">3</td>
-                                        <td style="text-align: center;">2024</td>
-                                        <td>Audit Pengelolaan Dana CSR</td>
-                                        <td>Notulensi Rapat Tinjauan CSR</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal3">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">4</td>
-                                        <td style="text-align: center;">2023</td>
-                                        <td>Audit Kinerja Operasional Stasiun</td>
-                                        <td>Laporan Audit Kinerja 2024</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal4">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">5</td>
-                                        <td style="text-align: center;">2023</td>
-                                        <td>Audit Kinerja Operasional Stasiun</td>
-                                        <td>Memo Internal Kinerja Stasiun</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal5">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">6</td>
-                                        <td style="text-align: center;">2023</td>
-                                        <td>Audit Pengelolaan Aset Properti</td>
-                                        <td>Dokumen Pengalihan Hak Properti</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal6">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">7</td>
-                                        <td style="text-align: center;">2022</td>
-                                        <td>Audit Pengadaan Barang dan Jasa</td>
-                                        <td>Kontrak Kerja Sama Vendor</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal7">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">8</td>
-                                        <td style="text-align: center;">2022</td>
-                                        <td>Audit Pengadaan Barang dan Jasa</td>
-                                        <td>Surat Keputusan Tender</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal8">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">9</td>
-                                        <td style="text-align: center;">2022</td>
-                                        <td>Audit Laporan Keuangan Tahunan</td>
-                                        <td>Laporan Keuangan Periode 2024</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal9">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;">10</td>
-                                        <td style="text-align: center;">2021</td>
-                                        <td>Audit Keselamatan Gedung</td>
-                                        <td>Dokumen Standar Keselamatan</td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn btn-outline-dark"
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal10">
-                                                <i class="fas fa-info"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="#" tabindex="-1"
-                                            aria-disabled="true">Previous</a>
-                                    </li>
-                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">Next</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Tabel Huib --}}
-        <div id="huic" class="tab-content fade" style="display: none;">
-            <div class="card mb-5" style="padding: 25px;">
-                <div class="row">
-                    <div class="col-12">
-                        <!-- Responsive table wrapper -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle" style="border-color: black;">
-                                <thead class="table-light" style="border-color: black;">
-                                    <tr>
-                                        <th style="text-align: center;">No</th>
-                                        <th style="text-align: center;">Tahun</th>
-                                        <th>Objek Audit</th>
-                                        <th>Uraian</th>
-                                        <th style="text-align: center;">File</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="5"
-                                            style="text-align: center; font-style: italic; color: gray; padding: 20px;">
-                                            Belum ada penugasan
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            </nav> --}}
                         </div>
                     </div>
                 </div>
@@ -688,7 +406,7 @@
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="pdfModal1" tabindex="-1" aria-labelledby="pdfModalLabel1" aria-hidden="true">
+    {{-- <div class="modal fade" id="pdfModal1" tabindex="-1" aria-labelledby="pdfModalLabel1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -700,9 +418,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- Modal -->
-    <div class="modal fade" id="fileNotFoundModal" tabindex="-1" aria-labelledby="fileNotFoundModalLabel"
+    {{-- <div class="modal fade" id="fileNotFoundModal" tabindex="-1" aria-labelledby="fileNotFoundModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -720,7 +438,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
 
     <!-- Footer-->
@@ -880,6 +598,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('custom/js/kertaskerja.js') }}"></script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @elseif(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @endif
 </body>
 
 </html>

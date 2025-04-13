@@ -20,14 +20,14 @@ class PeraturanDaerahController extends Controller
         'tanggal_terundang' => 'required|date',
         'deskripsi' => 'required|string|max:255',
         'status' => 'required|string|max:255',
-        'file_pdf' => 'required|file|mimes:pdf|max:2048',
+        'file_pdf' => 'required|file|mimes:pdf',
     ]);
 
     if ($request->hasFile('file_pdf') && $request->file('file_pdf')->isValid()) {
         $file = $request->file('file_pdf');
-        $path = $file->store('peraturan_daerah', 'public');
+        $path = $file->storeAs('peraturan_daerah', $file->getClientOriginalName(), 'public');
     } else {
-        return back()->with('error', 'File upload failed. Please try again.');
+        return back()->with('error', 'Terdapat kesalahan, file tidak tersimpan pada penyimpanan lokal');
     }
 
     peraturan_daerah::create([

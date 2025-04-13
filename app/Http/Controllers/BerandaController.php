@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\beranda;
 use App\Http\Requests\StoreberandaRequest;
 use App\Http\Requests\UpdateberandaRequest;
+use App\Models\kertas_kerja;
 use App\Models\peraturan_daerah;
+use App\Models\sub_kertas_kerja;
 
 class berandaController extends Controller
 {
@@ -66,22 +68,20 @@ class berandaController extends Controller
 
     public function kertaskerja()
     {
-        return view('kertaskerja');
+        $kertas_kerja = kertas_kerja::all();
+        return view('kertaskerja', [
+            'kertas_kerja' => $kertas_kerja,
+        ]);
     }
 
-    public function detailkertaskerja()
+    public function detailkertaskerja($id)
     {
-        return view('detailkertaskerja');
-    }
-
-    public function detailkertaskerja1()
-    {
-        return view('detailkertaskerja1');
-    }
-
-    public function detailkertaskerja2()
-    {
-        return view('detailkertaskerja2');
+        $sub_kertas_kerja = sub_kertas_kerja::where('kertas_kerja', $id)->get();
+        $kertas_kerja  = kertas_kerja::find($id);
+        return view('detailkertaskerja', [
+            'sub_kertas_kerja' => $sub_kertas_kerja,
+            'kertas_kerja' => $kertas_kerja,
+        ]);
     }
 
     public function suratmasuk()

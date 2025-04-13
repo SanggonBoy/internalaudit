@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\KertasKerjaController;
 use App\Http\Controllers\PeraturanDaerahController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\berandaController;
+use App\Http\Controllers\SubKertasKerjaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,9 +33,6 @@ Route::middleware('auth')->group(function () {
     Route::get('kertaskerja', [berandaController::class, 'kertaskerja'])->name('kertaskerja');
     Route::get('beritaacara', [berandaController::class, 'beritaacara'])->name('beritaacara');
     Route::get('mom', [berandaController::class, 'mom'])->name('mom');
-    Route::get('detailkertaskerja', [berandaController::class, 'detailkertaskerja'])->name('detailkertaskerja');
-    Route::get('detailkertaskerja1', [berandaController::class, 'detailkertaskerja1'])->name('detailkertaskerja1');
-    Route::get('detailkertaskerja2', [berandaController::class, 'detailkertaskerja2'])->name('detailkertaskerja2');
     Route::get('suratmasuk', [berandaController::class, 'suratmasuk'])->name('suratmasuk');
     Route::get('suratkeluar', [berandaController::class, 'suratkeluar'])->name('suratkeluar');
     Route::get('suratketerangandireksi', [berandaController::class, 'suratketerangandireksi'])->name('suratketerangandireksi');
@@ -42,6 +41,10 @@ Route::middleware('auth')->group(function () {
     Route::get('monitoring', [berandaController::class, 'monitoring'])->name('monitoring');
     Route::get('monitoring2', [berandaController::class, 'monitoring2'])->name('monitoring2');
     Route::post('/peraturan_daerah', [PeraturanDaerahController::class, 'store'])->name('peraturan_daerah.store');
+    Route::post('/kertas_kerja', [KertasKerjaController::class, 'store'])->name('kertas_kerja.store');
+    Route::get('/detailkertaskerja/{id}', [berandaController::class, 'detailkertaskerja'])->name('detailkertaskerja');
+    Route::post('/sub_kertas_kerja', [SubKertasKerjaController::class, 'store'])->name('sub_kertas_kerja.store');
+    
 });
 
 require __DIR__ . '/auth.php';
