@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>JDIH - Internal Audit KCIC</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap CSS -->
@@ -21,6 +22,8 @@
     {{-- <link href="{{ asset('landing-page/css/styles.css')}}" rel="stylesheet" /> --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <style>
         /* Navbar putih dengan bayangan */
         .navbar-white {
@@ -230,6 +233,19 @@
             color: #ccc;
             cursor: not-allowed;
         }
+
+        .swal2-popup.full-screen-modal {
+            max-width: 80%;
+            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            border-radius: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0;
+        }
     </style>
 </head>
 
@@ -335,58 +351,6 @@
                     </small> --}}
                 </div>
             </div>
-
-            <!-- Card for Advanced Search (hidden initially) -->
-            <div class="row justify-content-start mt-4" id="advanced-search-card" class="advanced-search-card">
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <label for="subjek">Subjek</label>
-                            <select class="form-control" id="subjek">
-                                <option value="subjek1">Subjek 1</option>
-                                <option value="subjek2">Subjek 2</option>
-                                <option value="subjek3">Subjek 3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <label for="bentuk">Bentuk</label>
-                            <select class="form-control" id="bentuk">
-                                <option value="bentuk1">Bentuk 1</option>
-                                <option value="bentuk2">Bentuk 2</option>
-                                <option value="bentuk3">Bentuk 3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <label for="kategori">Kategori</label>
-                            <select class="form-control" id="kategori">
-                                <option value="kategori1">Kategori 1</option>
-                                <option value="kategori2">Kategori 2</option>
-                                <option value="kategori3">Kategori 3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <label for="status">Status</label>
-                            <select class="form-control" id="status">
-                                <option value="status1">Status 1</option>
-                                <option value="status2">Status 2</option>
-                                <option value="status3">Status 3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </header>
 
@@ -394,10 +358,17 @@
     <div class="container">
         <div class="custom-card mb-5 mt-5">
             <div class="row">
-                <div class="col-12 d-flex justify-content-between align-items-center">
+                <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
                     <h2 class="my-4">Daftar Peraturan Menteri.</h2>
                     <h2 class="my-4">Pencarian!</h2>
                 </div>
+                @canany(['admin', 'viewer'])
+                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+                        <a href="#" id="tambahPeraturanMenteri" class="btn border border-dark"
+                            style="color: #1B56FD">Tambah Peraturan
+                            Menteri</a>
+                    </div>
+                @endcan
             </div>
             <div class="row">
                 <!-- Blog entries-->
@@ -419,121 +390,30 @@
 
                     @include('modal-detailmenteri')
 
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Berlaku</span>
-                            <div class="small text-muted">5 September 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Lingkungan Hidup No. 22 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini menetapkan kebijakan perlindungan lingkungan hidup dan pengelolaan limbah
-                                industri secara berkelanjutan.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
+                    @foreach ($peraturan_menteri as $item)
+                        <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
+                            <div class="card-body">
+                                <span
+                                    class="badge {{ $item->status == 'Berlaku' ? 'bg-success' : 'bg-danger' }} position-absolute top-0 end-0 m-3">{{ $item->status }}</span>
+                                <div class="small text-muted">Terbit:
+                                    {{ date('M d, Y', strtotime($item->tanggal_terbit)) }} | Terundang:
+                                    {{ date('M d, Y', strtotime($item->tanggal_terundang)) }}</div>
+                                <h4 class="card-title">{{ $item->nama_surat }}</h4>
+                                <p class="card-text">
+                                    {{ $item->deskripsi }}
+                                </p>
+                                <a data-pdf="{{ asset('storage/' . $item->file_pdf) }}"
+                                    data-status="{{ $item->status }}" data-nomor="{{ $item->nomor }}"
+                                    data-namaSurat="{{ $item->nama_surat }}"
+                                    data-tanggalTerbit="{{ date('M d, Y', strtotime($item->tanggal_terbit)) }}"
+                                    data-tanggalTerundang="{{ date('M d, Y', strtotime($item->tanggal_terundang)) }}"
+                                    data-deskripsi="{{ $item->deskripsi }}"
+                                    data-jenis="{{ $item->jenis }}"
+                                    class="btn btn-outline-dark filePdf"
+                                    href="#!">Selengkapnya</a>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">20 Agustus 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Ketenagakerjaan No. 5 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini mengatur perlindungan tenaga kerja dan peningkatan kesejahteraan pekerja
-                                dalam sektor industri.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">12 Juli 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Perdagangan No. 7 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini menetapkan kebijakan perdagangan internasional untuk meningkatkan daya
-                                saing ekspor nasional.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Berlaku</span>
-                            <div class="small text-muted">18 Juni 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Agraria No. 4 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini mengatur kebijakan tata ruang dan penggunaan lahan untuk mendukung
-                                pembangunan berkelanjutan.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-dark position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">8 April 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Pendidikan No. 6 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini memberikan panduan implementasi kurikulum pendidikan berbasis kompetensi.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Berlaku</span>
-                            <div class="small text-muted">30 Maret 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Perhubungan No. 10 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini mengatur kebijakan transportasi publik untuk meningkatkan konektivitas
-                                antarwilayah.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Berlaku</span>
-                            <div class="small text-muted">14 Februari 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Energi dan Sumber Daya Mineral No. 18 Tahun 2024
-                            </h4>
-                            <p class="card-text">
-                                Peraturan ini membahas tata kelola sumber daya energi nasional untuk memastikan
-                                keberlanjutan dan ketahanan energi negara.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">22 Januari 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Kesehatan No. 2 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini mengatur standar pelayanan kesehatan di rumah sakit dan fasilitas
-                                kesehatan lainnya.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Berlaku</span>
-                            <div class="small text-muted">10 Januari 2024</div>
-                            <h4 class="card-title">Peraturan Menteri Sosial No. 1 Tahun 2024</h4>
-                            <p class="card-text">
-                                Peraturan ini menetapkan kebijakan bantuan sosial bagi masyarakat kurang mampu.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
+                    @endforeach
 
                     <!-- Pagination-->
                     <nav aria-label="Pagination">
@@ -798,6 +678,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
+    <script src="{{ asset('custom/js/searchMenteri.js') }}"></script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @elseif(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @endif
 </body>
 
 </html>

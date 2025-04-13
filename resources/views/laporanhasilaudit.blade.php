@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>JDIH - Internal Audit KCIC</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap CSS -->
@@ -21,6 +22,8 @@
     {{-- <link href="{{ asset('landing-page/css/styles.css')}}" rel="stylesheet" /> --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <style>
         /* Navbar putih dengan bayangan */
         .navbar-white {
@@ -229,6 +232,18 @@
             color: #ccc;
             cursor: not-allowed;
         }
+        .swal2-popup.full-screen-modal {
+            max-width: 80%;
+            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            border-radius: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0;
+        }
     </style>
 </head>
 <body>
@@ -337,10 +352,16 @@
     <div class="container">
         <div class="custom-card mb-5 mt-5">
             <div class="row">
-                <div class="col-12 d-flex justify-content-between align-items-center">
-                    <h2 class="my-4">Daftar Laporan Hasil Audit .</h2>
+                <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+                    <h2 class="my-4">Daftar Laporan Hasil Audit.</h2>
                     <h2 class="my-4">Pencarian!</h2>
                 </div>
+                @canany(['admin', 'viewer'])
+                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+                        <a href="#" id="tambahLaporanHasilAudit" class="btn border border-dark"
+                            style="color: #1B56FD">Tambah Laporan Hasil Audit</a>
+                    </div>
+                @endcan
             </div>
             <div class="row">
                 <!-- Blog entries-->
@@ -360,54 +381,31 @@
                     </div>
                     
                     @include('modal-detaillha')
-                    
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Selesai</span>
-                            <div class="small text-muted">5 September 2024</div>
-                            <h4 class="card-title">Laporan Hasil Audit Kepatuhan Operasional</h4>
-                            <p class="card-text">
-                                Audit ini mengevaluasi sejauh mana operasional perusahaan telah mematuhi regulasi internal dan eksternal, serta mengidentifikasi potensi risiko kepatuhan.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#">Selengkapnya</a>
+                   
+                    @foreach ($laporanhasilaudit as $item)
+                        <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
+                            <div class="card-body">
+                                <span
+                                    class="badge {{ $item->status == 'Selesai' ? 'bg-success' : 'bg-warning' }} position-absolute top-0 end-0 m-3">{{ $item->status }}</span>
+                                <div class="small text-muted">Terbit:
+                                    {{ date('M d, Y', strtotime($item->tanggal)) }}</div>
+                                <h4 class="card-title">{{ $item->nama_lha }}</h4>
+                                <p class="card-text">
+                                    {{ $item->uraian_lha }}
+                                </p>
+                                <a data-pdf="{{ asset('storage/' . $item->file_pdf) }}"
+                                    data-status="{{ $item->status }}" data-nomor="{{ $item->nomor }}"
+                                    data-namaLaporanHasilAudit="{{ $item->nama_lha }}"
+                                    data-tanggal="{{ date('M d, Y', strtotime($item->tanggal)) }}"
+                                    data-uraian="{{ $item->uraian_lha }}"
+                                    data-catatan="{{ $item->Catatan }}"
+                                    data-notulis="{{ $item->Notulis }}"
+                                    class="btn btn-outline-dark filePdf"
+                                    href="#!">Selengkapnya</a>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Diperlukan Tindakan</span>
-                            <div class="small text-muted">20 Agustus 2024</div>
-                            <h4 class="card-title">Laporan Hasil Audit Pengelolaan Aset</h4>
-                            <p class="card-text">
-                                Audit ini mengidentifikasi inefisiensi dalam pengelolaan aset perusahaan dan memberikan rekomendasi untuk optimalisasi penggunaan aset.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#">Selengkapnya</a>
-                        </div>
-                    </div>
-                    
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Diperlukan Tindakan</span>
-                            <div class="small text-muted">12 Juli 2024</div>
-                            <h4 class="card-title">Laporan Hasil Audit Sistem Keamanan Data</h4>
-                            <p class="card-text">
-                                Laporan ini menyoroti potensi kelemahan dalam sistem keamanan data perusahaan dan memberikan langkah-langkah mitigasi risiko kebocoran data.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#">Selengkapnya</a>
-                        </div>
-                    </div>
-                    
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Selesai</span>
-                            <div class="small text-muted">18 Juni 2024</div>
-                            <h4 class="card-title">Laporan Hasil Audit Efisiensi Pengadaan</h4>
-                            <p class="card-text">
-                                Audit ini mengevaluasi efisiensi proses pengadaan barang dan jasa di perusahaan, serta potensi penghematan biaya operasional.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#">Selengkapnya</a>
-                        </div>
-                    </div>
+                        
+                    @endforeach
                                     
                     <!-- Pagination-->
                     <nav aria-label="Pagination">
@@ -672,6 +670,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
+    <script src="{{ asset('custom/js/laporanHasilAudit.js') }}"></script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @elseif(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @endif
 </body>
 
 </html>
