@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>JDIH - Internal Audit KCIC</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap CSS -->
@@ -21,6 +22,8 @@
     {{-- <link href="{{ asset('landing-page/css/styles.css')}}" rel="stylesheet" /> --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <style>
         /* Navbar putih dengan bayangan */
         .navbar-white {
@@ -230,6 +233,18 @@
             color: #ccc;
             cursor: not-allowed;
         }
+        .swal2-popup.full-screen-modal {
+            max-width: 80%;
+            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            border-radius: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0;
+        }
     </style>
 </head>
 
@@ -394,10 +409,16 @@
     <div class="container">
         <div class="custom-card mb-5 mt-5">
             <div class="row">
-                <div class="col-12 d-flex justify-content-between align-items-center">
+                <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
                     <h2 class="my-4">Daftar Berita Acara.</h2>
                     <h2 class="my-4">Pencarian!</h2>
                 </div>
+                @canany(['admin', 'viewer'])
+                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+                        <a href="#" id="tambahBeritaAcara" class="btn border border-dark"
+                            style="color: #1B56FD">Tambah Berita Acara</a>
+                    </div>
+                @endcan
             </div>
             <div class="row">
                 <!-- Blog entries-->
@@ -420,111 +441,30 @@
 
                     @include('modal-detailba')
 
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">5 Februari 2023</div>
-                            <h4 class="card-title">Berita Acara Klarifikasi Penyimpangan Proses Lelang</h4>
-                            <p class="card-text">
-                                Laporan ini berisi klarifikasi terkait dugaan penyimpangan dalam proses lelang yang
-                                telah melewati masa berlaku dokumen.
-                            </p>
-                            <button class="btn btn-outline-dark" data-bs-toggle="modal"
-                                data-bs-target="#detailModal">Selengkapnya</button>
+                    @foreach ($beritaacara as $item)
+                        <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
+                            <div class="card-body">
+                                <span
+                                    class="badge {{ $item->status == 'Selesai' ? 'bg-success' : 'bg-warning' }} position-absolute top-0 end-0 m-3">{{ $item->status }}</span>
+                                <div class="small text-muted">Terbit:
+                                    {{ date('M d, Y', strtotime($item->tanggal)) }}</div>
+                                <h4 class="card-title">{{ $item->nama }}</h4>
+                                <p class="card-text">
+                                    {{ $item->uraian }}
+                                </p>
+                                <a data-pdf="{{ asset('storage/' . $item->file_pdf) }}"
+                                    data-status="{{ $item->status }}" data-nomor="{{ $item->nomor }}"
+                                    data-nama="{{ $item->nama }}"
+                                    data-tanggal="{{ date('M d, Y', strtotime($item->tanggal)) }}"
+                                    data-uraian="{{ $item->uraian }}"
+                                    data-catatan="{{ $item->catatan }}"
+                                    data-konseptor="{{ $item->konseptor }}"
+                                    class="btn btn-outline-dark filePdf"
+                                    href="#!">Selengkapnya</a>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Aktif</span>
-                            <div class="small text-muted">20 Januari 2024</div>
-                            <h4 class="card-title">Berita Acara Penerimaan Barang dan Jasa</h4>
-                            <p class="card-text">
-                                Berita acara ini mencatat penerimaan barang dan jasa hasil pengadaan yang masih dalam
-                                masa berlaku pemeriksaan.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">8 Desember 2022</div>
-                            <h4 class="card-title">Berita Acara Serah Terima Aset Perusahaan</h4>
-                            <p class="card-text">
-                                Laporan ini mendokumentasikan serah terima aset perusahaan yang telah melewati masa
-                                berlaku audit internal.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Aktif</span>
-                            <div class="small text-muted">12 Oktober 2024</div>
-                            <h4 class="card-title">Berita Acara Penyerahan Kendaraan Dinas</h4>
-                            <p class="card-text">
-                                Berita acara ini mencatat serah terima kendaraan dinas dari unit lama ke unit baru
-                                sesuai dengan kebijakan perusahaan.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">18 September 2021</div>
-                            <h4 class="card-title">Berita Acara Permohonan Penghapusan Aset</h4>
-                            <p class="card-text">
-                                Permohonan penghapusan aset perusahaan telah melewati batas waktu persetujuan yang
-                                ditetapkan oleh pihak manajemen.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Aktif</span>
-                            <div class="small text-muted">5 Agustus 2024</div>
-                            <h4 class="card-title">Berita Acara Insiden Kebocoran Data</h4>
-                            <p class="card-text">
-                                Berita acara ini mencatat temuan awal terkait dugaan kebocoran data pelanggan dan saat
-                                ini masih dalam masa berlaku investigasi.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">Kadaluarsa</span>
-                            <div class="small text-muted">22 Juli 2020</div>
-                            <h4 class="card-title">Berita Acara Evaluasi Kinerja Vendor</h4>
-                            <p class="card-text">
-                                Evaluasi terhadap kinerja vendor dalam menyediakan layanan sesuai kontrak telah melewati
-                                batas waktu yang ditentukan.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 position-relative" style="border-left: 5px solid #000000;">
-                        <div class="card-body">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3">Aktif</span>
-                            <div class="small text-muted">10 Juni 2024</div>
-                            <h4 class="card-title">Berita Acara Perbaikan Infrastruktur IT</h4>
-                            <p class="card-text">
-                                Berita acara ini mencatat hasil akhir dari proyek perbaikan dan peningkatan
-                                infrastruktur IT untuk meningkatkan kinerja sistem.
-                            </p>
-                            <a class="btn btn-outline-dark" href="#!">Selengkapnya</a>
-                        </div>
-                    </div>
-
+                        
+                    @endforeach
 
                     <!-- Pagination-->
                     <nav aria-label="Pagination">
@@ -790,6 +730,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
+    <script src="{{ asset('custom/js/beritaAcara.js') }}"></script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @elseif(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @endif
 </body>
 
 </html>

@@ -1,39 +1,39 @@
 $(document).ready(function () {
-    $('#tambahPeraturanDaerah').on('click', function () {
+    $('#tambahBeritaAcara').on('click', function () {
         Swal.fire({
-            title: 'Tambah Peraturan Daerah',
+            title: 'Tambah Berita Acara',
             html: `
-                <form id="peraturanDaerah" action="/peraturan_daerah" method="POST" enctype="multipart/form-data">
+                <form id="beritaAcara" action="/beritaacara" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
                     <div class="mb-3">
                         <label for="nomor" class="form-label">Nomor:</label>
                         <input type="text" name="nomor" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="nama_surat" class="form-label">Nama Surat:</label>
-                        <input type="text" name="nama_surat" class="form-control" required>
+                        <label for="nama" class="form-label">Nama Berita Acara :</label>
+                        <input type="text" name="nama" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="jenis" class="form-label">Jenis:</label>
-                        <input type="text" name="jenis" class="form-control" required>
+                        <label for="uraian" class="form-label">Uraian Berita Acara :</label>
+                        <textarea name="uraian" class="form-control" required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="tanggal_terbit" class="form-label">Tanggal Terbit:</label>
-                        <input type="date" name="tanggal_terbit" class="form-control" required>
+                        <label for="tanggal" class="form-label">Tanggal :</label>
+                        <input type="date" name="tanggal" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="tanggal_terundang" class="form-label">Tanggal Terundang:</label>
-                        <input type="date" name="tanggal_terundang" class="form-control" required>
+                        <label for="konseptor" class="form-label">Konseptor :</label>
+                        <input name="konseptor" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="deskripsi" class="form-label">Deskripsi:</label>
-                        <textarea name="deskripsi" class="form-control" required></textarea>
+                        <label for="Catatan" class="form-label">Catatan :</label>
+                        <textarea name="Catatan" class="form-control" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="status" class="form-label">Status:</label>
                         <select name="status" class="form-select" required>
-                            <option value="Berlaku">Berlaku</option>
-                            <option value="Tidak Berlaku">Tidak Berlaku</option>
+                            <option value="draft">Draft</option>
+                            <option value="selesai ">Selesai</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -44,7 +44,7 @@ $(document).ready(function () {
             showCancelButton: true,
             confirmButtonText: 'Submit',
             preConfirm: () => {
-                const form = $('#peraturanDaerah');
+                const form = $('#beritaAcara');
 
                 form.submit();
             }
@@ -54,15 +54,15 @@ $(document).ready(function () {
     $('.filePdf').on('click', function () {
         const dataPdf = $(this).data('pdf');
         const dataNomor = $(this).data('nomor');
-        const dataNamaSurat = $(this).data('namasurat');
-        const dataJenis = $(this).data('jenis');
-        const dataTanggalTerbit = $(this).data('tanggalterbit');
-        const dataTanggalTerundang = $(this).data('tanggalterundang');
-        const dataDeskripsi = $(this).data('deskripsi');
+        const dataNama = $(this).data('nama');
+        const dataUraian = $(this).data('uraian');
+        const dataTanggal = $(this).data('tanggal');
+        const dataCatatan = $(this).data('catatan');
+        const dataKonseptor = $(this).data('konseptor');
         const dataStatus = $(this).data('status');
 
         Swal.fire({
-            title: "Detail Peraturan Daerah",
+            title: "Detail Berita Acara",
             html: `
                 <div class="row h-100">
                     <div class="col-lg-6 col-md-12 h-100">
@@ -79,31 +79,33 @@ $(document).ready(function () {
                                     <td>${dataNomor}</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-muted">Nama Surat</th>
-                                    <td>${dataNamaSurat}</td>
+                                    <th class="text-muted">Nama Berita Acara</th>
+                                    <td>${dataNama}</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-muted">Jenis</th>
-                                    <td>${dataJenis}</td>
+                                    <th class="text-muted">Uraian</th>
+                                    <td>${dataUraian}</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-muted">Tanggal Terbit</th>
-                                    <td>${dataTanggalTerbit}</td>
+                                    <th class="text-muted">Tanggal :</th>
+                                    <td>${dataTanggal}</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-muted">Tanggal Terundang</th>
-                                    <td>${dataTanggalTerundang}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-muted">Deskripsi</th>
+                                    <th class="text-muted">Konseptor</th>
                                     <td>
-                                        ${dataDeskripsi}
+                                        ${dataKonseptor}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Catatan</th>
+                                    <td>
+                                        ${dataCatatan}
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="text-muted">Status</th>
                                     <td>
-                                        <span class="badge ${dataStatus === 'Berlaku' ? 'bg-success' : 'bg-danger'}">${dataStatus}</span>
+                                        <span class="badge ${dataStatus === 'Selesai' ? 'bg-success' : 'bg-danger'}">${dataStatus}</span>
                                     </td>
                                 </tr>
                             </tbody>
