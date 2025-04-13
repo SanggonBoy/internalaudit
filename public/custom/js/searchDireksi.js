@@ -1,9 +1,9 @@
 $(document).ready(function () {
-    $('#tambahPeraturanDaerah').on('click', function () {
+    $('#tambahPeraturanDireksi').on('click', function () {
         Swal.fire({
-            title: 'Tambah Peraturan Daerah',
+            title: 'Tambah Peraturan Direksi',
             html: `
-                <form id="peraturanDaerah" action="/peraturan_daerah" method="POST" enctype="multipart/form-data">
+                <form id="peraturanDireksi" action="/peraturan_direksi" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
                     <div class="mb-3">
                         <label for="nomor" class="form-label">Nomor:</label>
@@ -44,7 +44,7 @@ $(document).ready(function () {
             showCancelButton: true,
             confirmButtonText: 'Submit',
             preConfirm: () => {
-                const form = $('#peraturanDaerah');
+                const form = $('#peraturanDireksi');
 
                 form.submit();
             }
@@ -62,7 +62,7 @@ $(document).ready(function () {
         const dataStatus = $(this).data('status');
 
         Swal.fire({
-            title: "Detail Peraturan Daerah",
+            title: "Detail Peraturan Direksi",
             html: `
                 <div class="row h-100">
                     <div class="col-lg-6 col-md-12 h-100">

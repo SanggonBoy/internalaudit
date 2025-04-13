@@ -5,7 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\beranda;
 use App\Http\Requests\StoreberandaRequest;
 use App\Http\Requests\UpdateberandaRequest;
+use App\Models\beritaacara;
+use App\Models\laporanhasilaudit;
 use App\Models\peraturan_daerah;
+use App\Models\peraturan_menteri;
+use App\Models\peraturan_presiden;
+use App\Models\peraturan_perusahaan;
+use App\Models\peraturan_direksi;
+use App\Models\peraturan_internasional;
+
 
 class berandaController extends Controller
 {
@@ -33,12 +41,18 @@ class berandaController extends Controller
 
     public function search()
     {
-        return view('search');
+        $peraturan_perusahaan = peraturan_perusahaan::all();
+        return view('search', [
+            'peraturan_perusahaan' => $peraturan_perusahaan,
+        ]);
     }
 
     public function searchdireksi()
     {
-        return view('searchdireksi');
+        $peraturan_direksi = peraturan_direksi::all();
+        return view('searchdireksi', [
+            'peraturan_direksi' => $peraturan_direksi,
+        ]);
     }
 
     public function searchdaerah()
@@ -51,39 +65,32 @@ class berandaController extends Controller
 
     public function searchmenteri()
     {
-        return view('searchmenteri');
+        $peraturan_menteri = peraturan_menteri::all();
+        return view('searchmenteri', [
+            'peraturan_menteri' => $peraturan_menteri,
+        ]);
     }
 
     public function searchpresiden()
     {
-        return view('searchpresiden');
+        $peraturan_presiden = peraturan_presiden::all();
+        return view('searchpresiden', [
+            'peraturan_presiden' => $peraturan_presiden,
+        ]);
     }
 
     public function searchinternasional()
     {
-        return view('searchinternasional');
+        $peraturan_internasional = peraturan_internasional::all();
+        return view('searchinternasional', [
+            'peraturan_internasional' => $peraturan_internasional,
+        ]);
     }
 
     public function kertaskerja()
     {
         return view('kertaskerja');
     }
-
-    public function detailkertaskerja()
-    {
-        return view('detailkertaskerja');
-    }
-
-    public function detailkertaskerja1()
-    {
-        return view('detailkertaskerja1');
-    }
-
-    public function detailkertaskerja2()
-    {
-        return view('detailkertaskerja2');
-    }
-
     public function suratmasuk()
     {
         return view('suratmasuk');
@@ -106,12 +113,18 @@ class berandaController extends Controller
 
     public function laporanhasilaudit()
     {
-        return view('laporanhasilaudit');
+        $laporanhasilaudit = laporanhasilaudit::all();
+        return view('laporanhasilaudit', [
+            'laporanhasilaudit' => $laporanhasilaudit,
+        ]);
     }
 
     public function beritaacara()
     {
-        return view('beritaacara');
+        $beritaacara = beritaacara::all();
+        return view('beritaacara', [
+            'beritaacara' => $beritaacara,
+        ]);
     }
 
     public function mom()
