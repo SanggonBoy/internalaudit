@@ -41,7 +41,7 @@ class PeraturanDaerahController extends Controller
         'file_pdf' => $path,
     ]);
 
-    // return back()->with('success', 'Peraturan Daerah berhasil ditambahkan.');
+    return back()->with('success', 'Peraturan Daerah berhasil ditambahkan.');
 }
 
 }
