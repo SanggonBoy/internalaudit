@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('peraturan', [berandaController::class, 'peraturan'])->name('peraturan');
     Route::get('search', [berandaController::class, 'search'])->name('search');
     Route::get('searchdireksi', [berandaController::class, 'searchdireksi'])->name('searchdireksi');
-    Route::get('searchdaerah', [berandaController::class, 'searchdaerah'])->name('searchdaerah');
+    Route::get('searchdaerah', action: [berandaController::class, 'searchdaerah'])->name('searchdaerah');
     Route::get('searchmenteri', [berandaController::class, 'searchmenteri'])->name('searchmenteri');
     Route::get('searchpresiden', [berandaController::class, 'searchpresiden'])->name('searchpresiden');
     Route::get('searchinternasional', [berandaController::class, 'searchinternasional'])->name('searchinternasional');
